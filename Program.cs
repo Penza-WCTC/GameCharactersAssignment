@@ -133,7 +133,84 @@ do
     }
     else if (choice == "3")
     {
-        // Remove Mario Character
+        if (characterChoice == "1")
+        {
+            {
+                // Remove Mario Character
+                Console.WriteLine("Enter the Id of the character to remove:");
+                if (UInt32.TryParse(Console.ReadLine(), out UInt32 Id))
+                {
+                    Mario? character = marios.FirstOrDefault(c => c.Id == Id);
+                    if (character == null)
+                    {
+                        logger.Error($"Character Id {Id} not found");
+                    }
+                    else
+                    {
+                        marios.Remove(character);
+                        // serialize list<marioCharacter> into json file
+                        File.WriteAllText(marioFileName, JsonSerializer.Serialize(marios));
+                        logger.Info($"Character Id {Id} removed");
+                    }
+                }
+                else
+                {
+                    logger.Error("Invalid Id");
+                }
+            }
+        }
+        else if (characterChoice == "2")
+        {
+            {
+                // Remove Mario Character
+                Console.WriteLine("Enter the Id of the character to remove:");
+                if (UInt32.TryParse(Console.ReadLine(), out UInt32 Id))
+                {
+                    DonkeyKong? character = donkeyKongs.FirstOrDefault(c => c.Id == Id);
+                    if (character == null)
+                    {
+                        logger.Error($"Character Id {Id} not found");
+                    }
+                    else
+                    {
+                        donkeyKongs.Remove(character);
+                        // serialize list<marioCharacter> into json file
+                        File.WriteAllText(dkFileName, JsonSerializer.Serialize(donkeyKongs));
+                        logger.Info($"Character Id {Id} removed");
+                    }
+                }
+                else
+                {
+                    logger.Error("Invalid Id");
+                }
+            }
+        }
+        else if (characterChoice == "3")
+        {
+            {
+                // Remove Mario Character
+                Console.WriteLine("Enter the Id of the character to remove:");
+                if (UInt32.TryParse(Console.ReadLine(), out UInt32 Id))
+                {
+                    StreetFighter2? character = streetFighter2s.FirstOrDefault(c => c.Id == Id);
+                    if (character == null)
+                    {
+                        logger.Error($"Character Id {Id} not found");
+                    }
+                    else
+                    {
+                        streetFighter2s.Remove(character);
+                        // serialize list<marioCharacter> into json file
+                        File.WriteAllText(sf2FileName, JsonSerializer.Serialize(streetFighter2s));
+                        logger.Info($"Character Id {Id} removed");
+                    }
+                }
+                else
+                {
+                    logger.Error("Invalid Id");
+                }
+            }
+        }
     }
     else if (string.IsNullOrEmpty(choice))
     {
