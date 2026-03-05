@@ -31,21 +31,36 @@ while (true)
 
     if (characterChoice == "1")
     {
-        marios = JsonSerializer.Deserialize<List<Mario>>(File.ReadAllText(marioFileName))!;
+        // check if file exists
+        if (File.Exists(marioFileName))
+        {
+            marios = JsonSerializer.Deserialize<List<Mario>>(File.ReadAllText(marioFileName))!;
+            logger.Info($"File deserialized {marioFileName}");
+        }
         listSelected = "Mario";
         break;
     }
 
     else if (characterChoice == "2")
     {
-        donkeyKongs = JsonSerializer.Deserialize<List<DonkeyKong>>(File.ReadAllText(dkFileName))!;
+        // check if file exists
+        if (File.Exists(dkFileName))
+        {
+            donkeyKongs = JsonSerializer.Deserialize<List<DonkeyKong>>(File.ReadAllText(dkFileName))!;
+            logger.Info($"File deserialized {dkFileName}");
+        }
         listSelected = "DonkeyKong";
         break;
     }
 
     else if (characterChoice == "3")
     {
-        streetFighter2s = JsonSerializer.Deserialize<List<StreetFighter2>>(File.ReadAllText(sf2FileName))!;
+        // check if file exists
+        if (File.Exists(sf2FileName))
+        {
+            streetFighter2s = JsonSerializer.Deserialize<List<StreetFighter2>>(File.ReadAllText(sf2FileName))!;
+            logger.Info($"File deserialized {sf2FileName}");
+        }
         listSelected = "StreetFighter2";
         break;
     }
