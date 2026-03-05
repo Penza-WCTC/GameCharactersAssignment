@@ -1,5 +1,6 @@
 using System.Text.Json;
 using NLog;
+using System.Reflection;
 using NLog.LayoutRenderers;
 string path = Directory.GetCurrentDirectory() + "//nlog.config";
 
@@ -12,8 +13,11 @@ logger.Info("Program started");
 string listSelected;
 string? characterChoice;
 List<Mario?> marios = new List<Mario?> { null };
-List<DonkeyKong?> donkeyKongs = new List<DonkeyKong?> {null};
-List<StreetFighter2?> streetFighter2s = new List<StreetFighter2?> {null};
+List<DonkeyKong?> donkeyKongs = new List<DonkeyKong?> { null };
+List<StreetFighter2?> streetFighter2s = new List<StreetFighter2?> { null };
+string marioFileName = "mario.json";
+string dkFileName = "dk.json";
+string sf2FileName = "sf2.json";
 
 while (true)
 {
@@ -27,7 +31,6 @@ while (true)
 
     if (characterChoice == "1")
     {
-        string marioFileName = "mario.json";
         marios = JsonSerializer.Deserialize<List<Mario>>(File.ReadAllText(marioFileName))!;
         listSelected = "Mario";
         break;
@@ -35,7 +38,6 @@ while (true)
 
     else if (characterChoice == "2")
     {
-        string dkFileName = "dk.json";
         donkeyKongs = JsonSerializer.Deserialize<List<DonkeyKong>>(File.ReadAllText(dkFileName))!;
         listSelected = "DonkeyKong";
         break;
@@ -43,7 +45,6 @@ while (true)
 
     else if (characterChoice == "3")
     {
-        string sf2FileName = "sf2.json";
         streetFighter2s = JsonSerializer.Deserialize<List<StreetFighter2>>(File.ReadAllText(sf2FileName))!;
         listSelected = "StreetFighter2";
         break;
@@ -82,7 +83,8 @@ do
             {
                 Console.WriteLine(c.Display());
             }
-        }else if (characterChoice == "3")
+        }
+        else if (characterChoice == "3")
         {
             foreach (var c in streetFighter2s)
             {
@@ -92,7 +94,42 @@ do
     }
     else if (choice == "2")
     {
-        // Add Mario Character
+        if (characterChoice == "1")
+        {
+            Mario mario = new()
+            {
+                Id = marios.Count == 0 ? 1 : marios.Max(c => c.Id) + 1
+            };
+            InputCharacter(mario);
+            // Add Character
+            marios.Add(mario);
+            File.WriteAllText(marioFileName, JsonSerializer.Serialize(marios));
+            logger.Info($"Character added: {mario.Name}");
+        }
+        else if (characterChoice == "2")
+        {
+            DonkeyKong donkeyKong = new()
+            {
+                Id = donkeyKongs.Count == 0 ? 1 : donkeyKongs.Max(c => c.Id) + 1
+            };
+            InputCharacter(donkeyKong);
+            // Add Character
+            donkeyKongs.Add(donkeyKong);
+            File.WriteAllText(dkFileName, JsonSerializer.Serialize(donkeyKongs));
+            logger.Info($"Character added: {donkeyKong.Name}");
+        }
+        else if (characterChoice == "3")
+        {
+            StreetFighter2 streetFighter2 = new()
+            {
+                Id = streetFighter2s.Count == 0 ? 1 : streetFighter2s.Max(c => c.Id) + 1
+            };
+            InputCharacter(streetFighter2);
+            // Add Character
+            streetFighter2s.Add(streetFighter2);
+            File.WriteAllText(sf2FileName, JsonSerializer.Serialize(streetFighter2s));
+            logger.Info($"Character added: {streetFighter2.Name}");
+        }
     }
     else if (choice == "3")
     {
@@ -110,4 +147,32 @@ do
 
 logger.Info("Program ended");
 
-logger.Info("Program ended");
+static void InputCharacter(Character character)
+{
+    Type type = character.GetType();
+    PropertyInfo[] properties = type.GetProperties();
+    var props = properties.Where(p => p.Name != "Id");
+    foreach (PropertyInfo prop in props)
+    {
+        if (prop.PropertyType == typeof(string))
+        {
+            Console.WriteLine($"Enter {prop.Name}:");
+            prop.SetValue(character, Console.ReadLine());
+        }
+        else if (prop.PropertyType == typeof(List<string>))
+        {
+            List<string> list = [];
+            do
+            {
+                Console.WriteLine($"Enter {prop.Name} or (enter) to quit:");
+                string response = Console.ReadLine()!;
+                if (string.IsNullOrEmpty(response))
+                {
+                    break;
+                }
+                list.Add(response);
+            } while (true);
+            prop.SetValue(character, list);
+        }
+    }
+}
