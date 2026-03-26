@@ -2,6 +2,7 @@ using System.Text.Json;
 using NLog;
 using System.Reflection;
 using NLog.LayoutRenderers;
+using System.Formats.Asn1;
 string path = Directory.GetCurrentDirectory() + "//nlog.config";
 
 // create instance of Logger
@@ -77,6 +78,7 @@ do
     Console.WriteLine("1) Display the " + listSelected + " Characters");
     Console.WriteLine("2) Add a " + listSelected + " Character");
     Console.WriteLine("3) Remove a " + listSelected + " Character");
+    Console.WriteLine("4) Edit a " + listSelected + " Character");
     Console.WriteLine("Enter to quit");
 
     // input selection
@@ -150,29 +152,29 @@ do
     {
         if (characterChoice == "1")
         {
+
+            // Remove Mario Character
+            Console.WriteLine("Enter the Id of the character to remove:");
+            if (UInt32.TryParse(Console.ReadLine(), out UInt32 Id))
             {
-                // Remove Mario Character
-                Console.WriteLine("Enter the Id of the character to remove:");
-                if (UInt32.TryParse(Console.ReadLine(), out UInt32 Id))
+                Mario? character = marios.FirstOrDefault(c => c.Id == Id);
+                if (character == null)
                 {
-                    Mario? character = marios.FirstOrDefault(c => c.Id == Id);
-                    if (character == null)
-                    {
-                        logger.Error($"Character Id {Id} not found");
-                    }
-                    else
-                    {
-                        marios.Remove(character);
-                        // serialize list<marioCharacter> into json file
-                        File.WriteAllText(marioFileName, JsonSerializer.Serialize(marios));
-                        logger.Info($"Character Id {Id} removed");
-                    }
+                    logger.Error($"Character Id {Id} not found");
                 }
                 else
                 {
-                    logger.Error("Invalid Id");
+                    marios.Remove(character);
+                    // serialize list<marioCharacter> into json file
+                    File.WriteAllText(marioFileName, JsonSerializer.Serialize(marios));
+                    logger.Info($"Character Id {Id} removed");
                 }
             }
+            else
+            {
+                logger.Error("Invalid Id");
+            }
+
         }
         else if (characterChoice == "2")
         {
@@ -225,6 +227,144 @@ do
                     logger.Error("Invalid Id");
                 }
             }
+        }
+    }
+    else if (choice == "4")
+    {
+        if (characterChoice == "1")
+        {
+            // edit Mario Character
+            Console.WriteLine("Enter the Id of the character to edit:");
+            if (UInt32.TryParse(Console.ReadLine(), out UInt32 Id))
+            {
+                Mario? character = marios.FirstOrDefault(c => c.Id == Id);
+                if (character == null)
+                {
+                    logger.Error($"Character Id {Id} not found");
+                }
+                else
+                {
+                    Console.WriteLine(character.Display());
+                    Console.WriteLine("\nDo you want to edit this?\n(y/n)");
+                    string? userChoice = Console.ReadLine();
+                    logger.Info("User Choice: {userChoice}", userChoice);
+
+                    if (userChoice != null && userChoice.ToLower() == "y")
+                    {
+                        string? newName = character.getName();
+                        string? newDescription = character.getDescription();
+                        List<string> newAlias = character.getRealAlias();
+                        string? innerChoice;
+
+                        Console.WriteLine(character.getName() + "\nDo you want to edit this?\n(y/n)");
+                        innerChoice = Console.ReadLine();
+                        logger.Info("User Choice: {innerChoice}", innerChoice);
+                        if (innerChoice != null && innerChoice.ToLower() == "y")
+                        {
+                            Console.WriteLine("What would you like their new name to be?:");
+                            newName = Console.ReadLine();
+                        }
+
+                        Console.WriteLine(character.getDescription() + "\nDo you want to edit this?\n(y/n)");
+                        innerChoice = Console.ReadLine();
+                        logger.Info("User Choice: {innerChoice}", innerChoice);
+                        if (innerChoice != null && innerChoice.ToLower() == "y")
+                        {
+                            Console.WriteLine("What would you like the new description to be?:");
+                            newDescription = Console.ReadLine();
+                        }
+
+                        Console.WriteLine(character.getAlias() + "\nDo you want to edit this?\n(y/n)");
+                        innerChoice = Console.ReadLine();
+                        logger.Info("User Choice: {innerChoice}", innerChoice);
+                        if (innerChoice != null && innerChoice.ToLower() == "y")
+                        {
+                            Console.WriteLine("Do you want to:\n1)Add\n2)Remove\nfrom the list?");
+                            string? innerInnerChoice = Console.ReadLine();
+                            logger.Info("User Choice: {innerInnerChoice}", innerInnerChoice);
+
+                            if (innerInnerChoice == "1")
+                            {
+                                bool tempTrueLock = true;
+                                while (tempTrueLock)
+                                {
+                                    Console.WriteLine(character.getAlias());
+                                    Console.WriteLine("Enter your Additional Alias:\nPress Enter to Leave");
+                                    string? AddedAlias = Console.ReadLine();
+                                    if (AddedAlias == "")
+                                    {
+                                        tempTrueLock = false;
+                                        newAlias = character.getRealAlias();
+                                    }
+                                    else if (AddedAlias != null)
+                                    {
+                                        character.addToArray(AddedAlias);
+                                    }
+                                    else
+                                    {
+                                        tempTrueLock = false;
+                                        newAlias = character.getRealAlias();
+                                    }
+                                }
+                            }
+                            else if (innerInnerChoice == "2")
+                            {
+                                bool tempTrueLock = true;
+                                while (tempTrueLock)
+                                {
+                                    Console.WriteLine(character.getAlias());
+                                    Console.WriteLine("Enter the Alias you want to remove:\nPress Enter to Leave");
+                                    string? removedAlias = Console.ReadLine();
+
+                                    if (removedAlias == "")
+                                    {
+                                        tempTrueLock = false;
+                                        newAlias = character.getRealAlias();
+                                    }
+                                    else if (removedAlias != null)
+                                    {
+                                        character.removeFromArray(removedAlias);
+                                    }
+                                    else
+                                    {
+                                        tempTrueLock = false;
+                                        newAlias = character.getRealAlias();
+                                    }
+                                }
+                            }
+                        }
+                        //take the stuff and make an object
+
+                        
+                        marios.Remove(character);
+                        
+                        Mario newMario = new Mario();
+
+                        newMario.Id = character.Id;
+                        newMario.Name = newName;
+                        newMario.Description = newDescription;
+                        newMario.Alias = newAlias;
+
+                        marios.Insert(character.getId()-1,newMario);
+
+                        File.WriteAllText(marioFileName, JsonSerializer.Serialize(marios));
+                        logger.Info($"Character Id {Id} updated");
+                    }
+                }
+            }
+            else
+            {
+                logger.Error("Invalid Id");
+            }
+        }
+
+        else if (characterChoice == "2")
+        {
+            
+        }
+        else if (characterChoice == "3")
+        {
+            
         }
     }
     else if (string.IsNullOrEmpty(choice))
