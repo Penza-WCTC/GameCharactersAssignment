@@ -360,7 +360,79 @@ do
 
         else if (characterChoice == "2")
         {
-            
+            // edit Mario Character
+            Console.WriteLine("Enter the Id of the character to edit:");
+            if (UInt32.TryParse(Console.ReadLine(), out UInt32 Id))
+            {
+                DonkeyKong? character = donkeyKongs.FirstOrDefault(c => c.Id == Id);
+                if (character == null)
+                {
+                    logger.Error($"Character Id {Id} not found");
+                }
+                else
+                {
+                    Console.WriteLine(character.Display());
+                    Console.WriteLine("\nDo you want to edit this?\n(y/n)");
+                    string? userChoice = Console.ReadLine();
+                    logger.Info("User Choice: {userChoice}", userChoice);
+
+                    if (userChoice != null && userChoice.ToLower() == "y")
+                    {
+                        string? newName = character.getName();
+                        string? newDescription = character.getDescription();
+                        string? newSpecies = character.getSpecies();
+                        string? innerChoice;
+
+                        Console.WriteLine(character.getName() + "\nDo you want to edit this?\n(y/n)");
+                        innerChoice = Console.ReadLine();
+                        logger.Info("User Choice: {innerChoice}", innerChoice);
+                        if (innerChoice != null && innerChoice.ToLower() == "y")
+                        {
+                            Console.WriteLine("What would you like their new name to be?:");
+                            newName = Console.ReadLine();
+                        }
+
+                        Console.WriteLine(character.getDescription() + "\nDo you want to edit this?\n(y/n)");
+                        innerChoice = Console.ReadLine();
+                        logger.Info("User Choice: {innerChoice}", innerChoice);
+                        if (innerChoice != null && innerChoice.ToLower() == "y")
+                        {
+                            Console.WriteLine("What would you like the new description to be?:");
+                            newDescription = Console.ReadLine();
+                        }
+                        
+                        Console.WriteLine(character.getSpecies() + "\nDo you want to edit this?\n(y/n)");
+                        innerChoice = Console.ReadLine();
+                        logger.Info("User Choice: {innerChoice}", innerChoice);
+                        if (innerChoice != null && innerChoice.ToLower() == "y")
+                        {
+                            Console.WriteLine("What would you like the new Species to be?:");
+                            newSpecies = Console.ReadLine();
+                        }
+
+                        //take the stuff and make an object
+
+                        
+                        donkeyKongs.Remove(character);
+                        
+                        DonkeyKong newDK = new DonkeyKong();
+
+                        newDK.Id = character.Id;
+                        newDK.Name = newName;
+                        newDK.Description = newDescription;
+                        newDK.Species = newSpecies;
+
+                        donkeyKongs.Insert(character.getId()-1, newDK);
+
+                        File.WriteAllText(dkFileName, JsonSerializer.Serialize(donkeyKongs));
+                        logger.Info($"Character Id {Id} updated");
+                    }
+                }
+            }
+            else
+            {
+                logger.Error("Invalid Id");
+            }
         }
         else if (characterChoice == "3")
         {

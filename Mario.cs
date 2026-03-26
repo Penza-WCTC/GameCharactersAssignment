@@ -13,23 +13,13 @@ public class Mario : Character
     Alias.Add(arg);
   }
 
-  public string getName()
-  {
-    return $"{Name}";
-  }
-    public string getDescription()
-  {
-    return $"{Description}";
-  }
+  
     public string getAlias() 
   {
     return $"{string.Join(", ", Alias)}";
   }
   
-  public int getId()
-  {
-    return (int)Id;
-  }
+
   public List<string> getRealAlias()
   {
     return Alias;
