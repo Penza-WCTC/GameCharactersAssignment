@@ -335,9 +335,9 @@ do
                         }
                         //take the stuff and make an object
 
-                        
+
                         marios.Remove(character);
-                        
+
                         Mario newMario = new Mario();
 
                         newMario.Id = character.Id;
@@ -345,7 +345,7 @@ do
                         newMario.Description = newDescription;
                         newMario.Alias = newAlias;
 
-                        marios.Insert(character.getId()-1,newMario);
+                        marios.Insert(character.getId() - 1, newMario);
 
                         File.WriteAllText(marioFileName, JsonSerializer.Serialize(marios));
                         logger.Info($"Character Id {Id} updated");
@@ -400,7 +400,7 @@ do
                             Console.WriteLine("What would you like the new description to be?:");
                             newDescription = Console.ReadLine();
                         }
-                        
+
                         Console.WriteLine(character.getSpecies() + "\nDo you want to edit this?\n(y/n)");
                         innerChoice = Console.ReadLine();
                         logger.Info("User Choice: {innerChoice}", innerChoice);
@@ -412,9 +412,9 @@ do
 
                         //take the stuff and make an object
 
-                        
+
                         donkeyKongs.Remove(character);
-                        
+
                         DonkeyKong newDK = new DonkeyKong();
 
                         newDK.Id = character.Id;
@@ -422,7 +422,7 @@ do
                         newDK.Description = newDescription;
                         newDK.Species = newSpecies;
 
-                        donkeyKongs.Insert(character.getId()-1, newDK);
+                        donkeyKongs.Insert(character.getId() - 1, newDK);
 
                         File.WriteAllText(dkFileName, JsonSerializer.Serialize(donkeyKongs));
                         logger.Info($"Character Id {Id} updated");
@@ -434,9 +434,133 @@ do
                 logger.Error("Invalid Id");
             }
         }
+
         else if (characterChoice == "3")
         {
-            
+            // edit Mario Character
+            Console.WriteLine("Enter the Id of the character to edit:");
+            if (UInt32.TryParse(Console.ReadLine(), out UInt32 Id))
+            {
+                StreetFighter2? character = streetFighter2s.FirstOrDefault(c => c.Id == Id);
+                if (character == null)
+                {
+                    logger.Error($"Character Id {Id} not found");
+                }
+                else
+                {
+                    Console.WriteLine(character.Display());
+                    Console.WriteLine("\nDo you want to edit this?\n(y/n)");
+                    string? userChoice = Console.ReadLine();
+                    logger.Info("User Choice: {userChoice}", userChoice);
+
+                    if (userChoice != null && userChoice.ToLower() == "y")
+                    {
+                        string? newName = character.getName();
+                        string? newDescription = character.getDescription();
+                        List<string> newMoves = character.getRealMoves();
+                        string? innerChoice;
+
+                        Console.WriteLine(character.getName() + "\nDo you want to edit this?\n(y/n)");
+                        innerChoice = Console.ReadLine();
+                        logger.Info("User Choice: {innerChoice}", innerChoice);
+                        if (innerChoice != null && innerChoice.ToLower() == "y")
+                        {
+                            Console.WriteLine("What would you like their new name to be?:");
+                            newName = Console.ReadLine();
+                        }
+
+                        Console.WriteLine(character.getDescription() + "\nDo you want to edit this?\n(y/n)");
+                        innerChoice = Console.ReadLine();
+                        logger.Info("User Choice: {innerChoice}", innerChoice);
+                        if (innerChoice != null && innerChoice.ToLower() == "y")
+                        {
+                            Console.WriteLine("What would you like the new description to be?:");
+                            newDescription = Console.ReadLine();
+                        }
+
+                        Console.WriteLine(character.getMoves() + "\nDo you want to edit this?\n(y/n)");
+                        innerChoice = Console.ReadLine();
+                        logger.Info("User Choice: {innerChoice}", innerChoice);
+                        if (innerChoice != null && innerChoice.ToLower() == "y")
+                        {
+                            Console.WriteLine("Do you want to:\n1)Add\n2)Remove\nfrom the list?");
+                            string? innerInnerChoice = Console.ReadLine();
+                            logger.Info("User Choice: {innerInnerChoice}", innerInnerChoice);
+
+                            if (innerInnerChoice == "1")
+                            {
+                                bool tempTrueLock = true;
+                                while (tempTrueLock)
+                                {
+                                    Console.WriteLine(character.getMoves());
+                                    Console.WriteLine("Enter your Additional Alias:\nPress Enter to Leave");
+                                    string? AddedAlias = Console.ReadLine();
+                                    if (AddedAlias == "")
+                                    {
+                                        tempTrueLock = false;
+                                        newMoves = character.getRealMoves();
+                                    }
+                                    else if (AddedAlias != null)
+                                    {
+                                        character.addToArray(AddedAlias);
+                                    }
+                                    else
+                                    {
+                                        tempTrueLock = false;
+                                        newMoves = character.getRealMoves();
+                                    }
+                                }
+                            }
+                            else if (innerInnerChoice == "2")
+                            {
+                                bool tempTrueLock = true;
+                                while (tempTrueLock)
+                                {
+                                    Console.WriteLine(character.getMoves());
+                                    Console.WriteLine("Enter the Alias you want to remove:\nPress Enter to Leave");
+                                    string? removedAlias = Console.ReadLine();
+
+                                    if (removedAlias == "")
+                                    {
+                                        tempTrueLock = false;
+                                        newMoves = character.getRealMoves();
+                                    }
+                                    else if (removedAlias != null)
+                                    {
+                                        character.removeFromArray(removedAlias);
+                                    }
+                                    else
+                                    {
+                                        tempTrueLock = false;
+                                        newMoves = character.getRealMoves();
+                                    }
+                                }
+                            }
+                        }
+
+                        //take the stuff and make an object
+
+
+                        streetFighter2s.Remove(character);
+
+                        StreetFighter2 newFighter = new StreetFighter2();
+
+                        newFighter.Id = character.Id;
+                        newFighter.Name = newName;
+                        newFighter.Description = newDescription;
+                        newFighter.Moves = newMoves;
+
+                        streetFighter2s.Insert(character.getId() - 1, newFighter);
+
+                        File.WriteAllText(sf2FileName, JsonSerializer.Serialize(streetFighter2s));
+                        logger.Info($"Character Id {Id} updated");
+                    }
+                }
+            }
+            else
+            {
+                logger.Error("Invalid Id");
+            }
         }
     }
     else if (string.IsNullOrEmpty(choice))
